@@ -2,8 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cake_shop_project/models/cake_shop.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:flutter_map/flutter_map.dart';
 
 class CakeShopDetailUI extends StatefulWidget {
   //สร้างตัวแปรรับค่าข้อมูลร้านจากหน้า shop_list_ui
@@ -263,6 +266,56 @@ class _CakeShopDetailUIState extends State<CakeShopDetailUI> {
                   height: MediaQuery.of(context).size.height * 0.02,
                 ),
                 //แสดง map และเปิดได้
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  child: FlutterMap(
+                    options: MapOptions(
+                      initialCenter: LatLng(
+                        double.parse(widget.cakeShop!.latitude!),
+                        double.parse(widget.cakeShop!.longitude!),
+                      ),
+                      initialZoom: 15.0,
+                    ),
+                    children: [
+                      //แผนที่
+                      TileLayer(
+                        urlTemplate:
+                            "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                        userAgentPackageName:
+                            'com.sau.flutter_cake_shop_project',
+                      ),
+                      //marker
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: LatLng(
+                              double.parse(widget.cakeShop!.latitude!),
+                              double.parse(widget.cakeShop!.longitude!),
+                            ),
+                            width: 80,
+                            height: 80,
+                            child: GestureDetector(
+                              onTap: () {
+                                //เปิด google map
+                                _launchInBrowser(
+                                  Uri.parse(
+                                    'https://www.google.com/maps/@${widget.cakeShop!.latitude},${widget.cakeShop!.longitude},15z',
+                                  ),
+                                );
+                              },
+                              child: FaIcon(
+                                FontAwesomeIcons.locationDot,
+                                color: Colors.red,
+                                size: 50,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
